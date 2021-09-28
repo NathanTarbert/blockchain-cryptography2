@@ -1,0 +1,71 @@
+Cryptography Cheat Sheet:
+* Hash functions
+	* Unique number for any given piece of data
+	* data -> hash is easy
+	* hash -> data is hard
+	* A good hash function should not have many collisions
+		* e.g. data1 -> hash1 and data2 -> hash1
+
+* MAC == Message Authentication Code
+	* Used for verifying the integrity of some data given that you have a secret key
+	* e.g. MAC(data, pass) --> mac_value
+	* how to use this? --> check if MAC(data, pass) == mac_value
+	* Use case example:
+		* you have a password-protected file that stores your blockchain private key
+		* Only by using the correct password, you can derive your address
+		* But any password you provide will still produce a valid address (just not yours)
+		* How do you check if the provided password is correct?
+			* By providing a mac value such that mac_value == MAC(data, password)
+			* If you get the same mac_value with your password, then the password is correct
+			* AND the data has not been tampered
+	* HMAC == Hash-based MAC
+		* More secure than using plain MAC
+
+* KDF == Key-Derivation Function
+	* Used for deriving a private key from a password
+	* NOTE: 
+		* MAC - used for verifying message (private key) authenticity, given a password
+		* KDF - used for deriving private key, given a password
+	* Example KDF algorithms:
+		* Scrypt, PBKDF2, BCrypt, Argon2
+
+* Symmetric Encryption == Encrypt/Decrypt messages using a shared key
+	* e.g. func(msg, key) -> cipher, func(cipher, key) -> msg
+	* AES - Most widely used symmetric algorithm
+	
+* DHKE == Diffie-Helman Key Exchange
+	* Algorithm for exchanging a shared key over an insecure channel
+	* Used for exchanging the shared key for symmetric encryption
+
+* Asymmetric Encryption == Encrypt/Decrypt messages AND/OR Sign/Verify signatures using separate keys
+	* Private Key - keep private
+	* Public Key - share publicly
+	* func(private key) -> public key. The reverse is hard to compute
+	* Encryption/Decryption example
+		* func(msg, public key) -> cipher
+		* func(cipher, private key) -> msg
+	* Sign/Verify example
+		* func(msg, private key) -> signature
+		* func(msg, signature, public key) -> valid/invalid
+	* Popular Asymmetric Algorithms
+		* RSA, ECC
+	
+* Random Number Generation
+	* PRNG == Pseudo-Random Number Generation
+		* Start from a seed, and produce sets of random numbers
+		* Given an initial seed, the produced random numbers are absolutely predictable
+	* CSPRNG == Crypto-Secure PRNG
+		* Initial seed should be truly random
+			* e.g. network activity, disk IO
+			* These sources are called entropy
+			
+* Merkle Trees
+	* A binary tree, in which every node consists of a hash
+	* leaf nodes are data blocks (transactions in blockchain)
+	* non-leaf node -> value = hash(hash(left_child), hash(right_child))
+	* Why use them?
+		* Used to derive a unique fingerprint (hash) for a set of transactions
+		* Can be used to quickly verify that a transaction is part of a block, given its hash
+		* Example:
+			* you want to verify that a tx is part of block #25
+			* You receive a set of hashes, which you can use to establish a merkle proof
